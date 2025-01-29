@@ -1,0 +1,28 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: p2_2 tests
+      id: p2_2-tests
+      uses: classroom-resources/autograding-python-grader@v1
+      with:
+        timeout: 5
+        max-score: 10
+        setup-command: pip install scikit-learn numpy pandas matplotlib seaborn
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        P2_2-TESTS_RESULTS: "${{steps.p2_2-tests.outputs.result}}"
+      with:
+        runners: p2_2-tests
