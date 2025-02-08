@@ -1,5 +1,7 @@
 import pytest
 import numpy as np
+import sys
+sys.path.append('./')
 from src.Lab_2_2_kNN import *
 import matplotlib
 matplotlib.use('Agg')
@@ -349,3 +351,4 @@ def test_plot_roc_curve():
     assert np.array_equal(
         result_perfect["fpr"], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     ), "FPR for perfect predictions is incorrect."
+
