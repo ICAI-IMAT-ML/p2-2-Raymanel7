@@ -521,4 +521,24 @@ def plot_roc_curve(y_true, y_probs, positive_label):
         FN = np.sum((y_pred == 0) & (y_true_bin == 1))  # Falsos Negativos
 
         TPR = TP / (TP + FN) if (TP + FN) > 0 else 0  # Sensibilidad (Recall)
-        FPR = FP / (FP + TN) if 
+        FPR = FP / (FP + TN) if (FP + TN) > 0 else 0  # Tasa de Falsos Positivos
+
+        tpr.append(TPR)
+        fpr.append(FPR)
+
+    # Graficar la curva ROC
+    plt.figure(figsize=(6, 6))
+    plt.plot(fpr, tpr, marker='o', linestyle='-', color='blue', label="Curva ROC")
+    plt.plot([0, 1], [0, 1], linestyle="--", color="gray", label="Modelo Aleatorio")
+    plt.xlabel("False Positive Rate (FPR)")
+    plt.ylabel("True Positive Rate (TPR)")
+    plt.title("Curva ROC")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+
+    return {"fpr": np.array(fpr), "tpr": np.array(tpr)}
+
+
+
