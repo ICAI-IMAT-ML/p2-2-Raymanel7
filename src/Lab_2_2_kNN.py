@@ -271,28 +271,15 @@ def evaluate_classification_metrics(y_true, y_pred, positive_label):
         - Specificity: tn / (tn + fp)
         - F1 Score: 2 * (Precision * Recall) / (Precision + Recall)
     """
-    positive_label = 1
     # Map string labels to 0 or 1
     y_true_mapped = np.array([1 if label == positive_label else 0 for label in y_true])
     y_pred_mapped = np.array([1 if label == positive_label else 0 for label in y_pred])
 
     # Confusion Matrix
-    tp = 0
-    tn = 0
-    fp = 0
-    fn = 0
-
-    for i in range(len(y_pred_mapped)):
-        if y_pred_mapped[i] == 0:
-            if y_true_mapped[i] == 0:
-                tn += 1
-            else:
-                fn += 1
-        else:
-            if y_true_mapped[i] == 0:
-                fp += 1
-            else:
-                tp += 1
+    tp = np.sum((y_true_mapped == 1) & (y_pred_mapped == 1))  # Verdaderos Positivos
+    fp = np.sum((y_pred_mapped == 1) & (y_true_mapped == 0))  # Falsos Positivos
+    tn = np.sum((y_pred_mapped == 0) & (y_true_mapped == 0))  # Verdaderos Negativos
+    fn = np.sum((y_pred_mapped == 0) & (y_true_mapped == 1))  # Falsos Negativos
     # 
 
     # Accuracy
@@ -306,6 +293,8 @@ def evaluate_classification_metrics(y_true, y_pred, positive_label):
     # 
     try:
         precision = tp / (tp + fp)
+        if tp+fp == 0:
+            precision = 0
     except:
         precision = 0
 
@@ -313,6 +302,8 @@ def evaluate_classification_metrics(y_true, y_pred, positive_label):
     # 
     try:
         recall = tp / (tp + fn)
+        if tp+fn == 0:
+            recall = 0
     except:
         recall = 0
 
@@ -320,12 +311,17 @@ def evaluate_classification_metrics(y_true, y_pred, positive_label):
     # 
     try:
         specificity = tn / (tn + fp)
+        if tn+fp == 0:
+            specificity = 0
     except:
         specificity = 0
+
     # F1 Score
     # 
     try:
         f1 = 2 * (precision * recall) / (precision + recall)
+        if precision + recall == 0:
+            f1 = 0
     except:
         f1 = 0
 
@@ -363,9 +359,9 @@ def plot_calibration_curve(y_true, y_probs, positive_label, n_bins=10):
             - "true_proportions": Array of the fraction of positives in each bin
 
     """
-      # Convertir `y_true` a valores binarios (1 si es la clase positiva, 0 si no)
+      # Convertir y_true a valores binarios (1 si es la clase positiva, 0 si no)
     y_true_bin  = []
-    positive_label = 1
+
     for dat in y_true:
         if dat == positive_label:
             y_true_bin.append(1)
@@ -436,7 +432,7 @@ def plot_probability_histograms(y_true, y_probs, positive_label, n_bins=10):
 
     """
         # Convertir y_true a binario
-    positive_label = 1
+    
     y_true = np.array(y_true)
     y_probs = np.array(y_probs)
     y_true_bin  = []
@@ -493,7 +489,6 @@ def plot_roc_curve(y_true, y_probs, positive_label):
 
     """
      # Convertir y_true a binario
-    positive_label = 1
     y_true = np.array(y_true)
     y_probs = np.array(y_probs)
     y_true_bin  = []
